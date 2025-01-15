@@ -26,9 +26,22 @@ var htmlDocument = new HtmlDocument(); //Used to parse, manipulate, and traverse
 htmlDocument.LoadHtml(html);
 
 var listOfBooksElement = htmlDocument.DocumentNode.SelectNodes("//ol[@class='row']/li");
-foreach(var bookElement in listOfBooksElement)
+foreach (var bookElement in listOfBooksElement)
 {
-    Console.WriteLine(bookElement.InnerText.Trim());
+    var titleNode = bookElement.SelectSingleNode(".//h3/a");
+    var title = titleNode?.GetAttributeValue("title", "No Title");
+
+    var priceNode = bookElement.SelectSingleNode(".//p[@class='price_color']");
+    var price = priceNode?.InnerText.Trim();
+
+    var stockNode = bookElement.SelectSingleNode(".//p[contains(@class, 'instock')]");
+    var stockStatus = stockNode?.InnerText.Trim();
+
+   
+    Console.WriteLine($"Title: {title}");
+    Console.WriteLine($"Price: {price}");
+    Console.WriteLine($"Stock Status: {stockStatus}");
+    Console.WriteLine();
 }
 //Console.WriteLine(listOfBooksElement);
 
