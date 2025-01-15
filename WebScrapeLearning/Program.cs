@@ -12,6 +12,8 @@ var temperatureElement = htmlDocument.DocumentNode.SelectSingleNode("//span[@cla
 var temperature = temperatureElement.InnerText.Trim();
 Console.WriteLine(temperature);
 
-
+var airQualityElement = htmlDocument.DocumentNode.SelectSingleNode("//span[@class='AirQualityText--severity--jiW+F']");
+var airQuality = airQualityElement.InnerText.Trim();
+Console.WriteLine(airQuality);
 
 Console.ReadKey();
