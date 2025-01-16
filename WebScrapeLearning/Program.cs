@@ -1,6 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using HtmlAgilityPack;
+using Microsoft.Playwright;
+using WebScrapeLearning;
 
 //Weather website
 /*String url = "https://weather.com/en-GB/weather/today/l/UKXX0085:1:UK?Goto=Redirected";
@@ -19,7 +21,7 @@ Console.WriteLine(airQuality);*/
 
 
 //Book website
-string baseUrl = "https://books.toscrape.com/catalogue/page-{0}.html";
+/*string baseUrl = "https://books.toscrape.com/catalogue/page-{0}.html";
 var httpClient = new HttpClient();
 
 int pageNumber = 1;
@@ -85,6 +87,13 @@ while (hasMorePages)
 }
 
 Console.WriteLine("Scraping completed.");
+*/
+
+
+var PlayWrightLearning = new PlaywrightLearning();
+await PlayWrightLearning.RunPlaywrightTestAsync();
+
+
 
 
 

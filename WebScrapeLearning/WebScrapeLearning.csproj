@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Chromium.ChromeDriver" Version="2.37.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.49.0" />
   </ItemGroup>
 
 </Project>
