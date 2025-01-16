@@ -19,31 +19,72 @@ Console.WriteLine(airQuality);*/
 
 
 //Book website
-String url = "https://books.toscrape.com/";
+string baseUrl = "https://books.toscrape.com/catalogue/page-{0}.html";
 var httpClient = new HttpClient();
-var html = httpClient.GetStringAsync(url).Result;
-var htmlDocument = new HtmlDocument(); //Used to parse, manipulate, and traverse HTML documents programmatically.
-htmlDocument.LoadHtml(html);
 
-var listOfBooksElement = htmlDocument.DocumentNode.SelectNodes("//ol[@class='row']/li");
-foreach (var bookElement in listOfBooksElement)
+int pageNumber = 1;
+bool hasMorePages = true;
+
+while (hasMorePages)
 {
-    var titleNode = bookElement.SelectSingleNode(".//h3/a");
-    var title = titleNode?.GetAttributeValue("title", "No Title");
+    // Construct URL for the current page
+    string url = pageNumber == 1
+        ? "https://books.toscrape.com/" // First page URL is different
+        : string.Format(baseUrl, pageNumber);
 
-    var priceNode = bookElement.SelectSingleNode(".//p[@class='price_color']");
-    var price = priceNode?.InnerText.Trim();
+    Console.WriteLine($"Fetching: {url}");
 
-    var stockNode = bookElement.SelectSingleNode(".//p[contains(@class, 'instock')]");
-    var stockStatus = stockNode?.InnerText.Trim();
+    try
+    {
+        // Fetch and parse the HTML document
+        var htmlResponseMessage = httpClient.GetAsync(url).Result;
+        if(htmlResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            hasMorePages = false;
+            break;
+        }
+        var html = htmlResponseMessage.Content.ReadAsStringAsync().Result;
+        var htmlDocument = new HtmlDocument();
+        htmlDocument.LoadHtml(html);
 
-   
-    Console.WriteLine($"Title: {title}");
-    Console.WriteLine($"Price: {price}");
-    Console.WriteLine($"Stock Status: {stockStatus}");
-    Console.WriteLine();
+        // Select book elements on the page
+        var listOfBooksElement = htmlDocument.DocumentNode.SelectNodes("//ol[@class='row']/li");
+        if (listOfBooksElement == null || listOfBooksElement.Count == 0)
+        {
+            hasMorePages = false; // No books found, end the loop
+            Console.WriteLine("No more books found. Exiting.");
+            break;
+        }
+
+        // Extract and print book information
+        foreach (var bookElement in listOfBooksElement)
+        {
+            var titleNode = bookElement.SelectSingleNode(".//h3/a");
+            var title = titleNode?.GetAttributeValue("title", "No Title");
+
+            var priceNode = bookElement.SelectSingleNode(".//p[@class='price_color']");
+            var price = priceNode?.InnerText.Trim();
+
+            var stockNode = bookElement.SelectSingleNode(".//p[contains(@class, 'instock')]");
+            var stockStatus = stockNode?.InnerText.Trim();
+
+            Console.WriteLine($"Title: {title}");
+            Console.WriteLine($"Price: {price}");
+            Console.WriteLine($"Stock Status: {stockStatus}");
+            Console.WriteLine();
+        }
+
+        // Increment the page number for the next iteration
+        pageNumber++;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"An error occurred: {ex.Message}");
+        hasMorePages = false; 
+    }
 }
-//Console.WriteLine(listOfBooksElement);
+
+Console.WriteLine("Scraping completed.");
 
 
 
